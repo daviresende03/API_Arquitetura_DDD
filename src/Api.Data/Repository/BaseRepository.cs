@@ -42,14 +42,28 @@ namespace Api.Data.Repository
             return await _dataSet.AnyAsync(p => p.Id.Equals(id));
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _dataSet.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public Task<T> GetAsync(Guid id)
+        public async Task<T> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _dataSet.SingleOrDefaultAsync(p => p.Id.Equals(id));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<T> InsertAsync(T item)
