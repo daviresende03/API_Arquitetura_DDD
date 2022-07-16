@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Api.Domain.Entities;
 using Api.Domain.Interfaces.Services.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +18,7 @@ namespace Api.Application.Controllers
         }
 
          [HttpGet]
-         public async Task<ActionResult> GetAll([FromServices] IUserService service)
+         public async Task<ActionResult> GetAll()  //([FromServices] IUserService service) - Caso não colocar o service no construtor, essa é uma opção
          {
             if(!ModelState.IsValid)
             {
@@ -40,7 +41,7 @@ namespace Api.Application.Controllers
          {
             if(!ModelState.IsValid)
             {
-                return BadRequest(ModelState); //400 BadRequest
+                return BadRequest(ModelState);
             }
 
             try
@@ -52,5 +53,32 @@ namespace Api.Application.Controllers
                 return StatusCode((int) HttpStatusCode.InternalServerError, e.Message);
             }
          }
+
+         [HttpPost]
+         public async Task<ActionResult> Post([FromBody] UserEntity user)
+         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _service.Post(user);
+                if(result != null)
+                {
+                    return Created(new Uri(Url.Link("GetWithId", new {id = result.Id})), result); //Inclui no cabeçalho um link para consulta ao objeto criado
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (ArgumentException e)
+            {
+                return StatusCode((int) HttpStatusCode.InternalServerError, e.Message);
+            }
+         }
+         
     }
 }
