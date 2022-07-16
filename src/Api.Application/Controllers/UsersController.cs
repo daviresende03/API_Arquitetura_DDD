@@ -26,7 +26,26 @@ namespace Api.Application.Controllers
 
             try
             {
-                return Ok (await service.GetAll()); //Se não der nenhum erro irá retornar Ok, caso contrário entra no Catch
+                return Ok (await _service.GetAll()); //Se não der nenhum erro irá retornar Ok, caso contrário entra no Catch
+            }
+            catch (ArgumentException e)
+            {
+                return StatusCode((int) HttpStatusCode.InternalServerError, e.Message);
+            }
+         }
+
+         [HttpGet]
+         [Route("{id}", Name = "GetWithId")]
+         public async Task<ActionResult> Get(Guid id)
+         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); //400 BadRequest
+            }
+
+            try
+            {
+                return Ok (await _service.Get(id));
             }
             catch (ArgumentException e)
             {
